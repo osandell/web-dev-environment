@@ -1,0 +1,12 @@
+/.env
+/.direnv
+/mysql
+/redis/data
+/redis/log
+/php-fpm/log
+/php-fpm/php-fpm.conf
+/nginx/nginx.conf
+/nginx/run
+/nginx/log
+/nginx/temp
+

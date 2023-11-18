@@ -1,0 +1,45 @@
+pid ${NGINX_PID_PATH}/nginx.pid;
+error_log ${NGINX_LOG_PATH}/error.log;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    client_body_temp_path ${NGINX_TEMP_PATH}/client_body;
+    proxy_temp_path ${NGINX_TEMP_PATH}/proxy;
+    fastcgi_temp_path ${NGINX_TEMP_PATH}/fastcgi;
+    uwsgi_temp_path ${NGINX_TEMP_PATH}/uwsgi;
+    scgi_temp_path ${NGINX_TEMP_PATH}/scgi;
+
+    server {
+        listen 80;
+        server_name ${SERVER_NAME};
+
+        root ${NGINX_ROOT_PATH};
+        index index.php index.html index.htm;
+
+        access_log ${NGINX_LOG_PATH}/access.log;
+
+        location / {
+            try_files __URI__  __URI__ /index.php?__QUERY_STRING__;
+        }
+
+        location ~ \.php$ {
+            fastcgi_pass ${SERVER_NAME}:9000; # Make sure this path matches the one from your PHP-FPM configuration
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME __DOCUMENT_ROOT____FASTCGI_SCRIPT_NAME__;
+            include fastcgi_params;
+        }
+
+        location ~ /\.ht {
+            deny all;
+        }
+    }
+}
